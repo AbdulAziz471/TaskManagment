@@ -1,4 +1,4 @@
-﻿using FirstApi.Modals;
+﻿using FirstApi.Models;
 
 namespace FirstApi.DTO
 {

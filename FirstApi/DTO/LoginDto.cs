@@ -1,4 +1,4 @@
-﻿namespace FirstApi.Modals
+﻿namespace FirstApi.Models
 {
     // DTOs/LoginDto.cs
     public class LoginDto

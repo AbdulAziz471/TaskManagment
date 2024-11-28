@@ -1,4 +1,4 @@
-﻿namespace FirstApi.Modals
+﻿namespace FirstApi.Models
 {
     public class Issue
     {

@@ -1,6 +1,6 @@
 ﻿using FirstApi.Data;
 using FirstApi.DTO;
-using FirstApi.Modals;
+using FirstApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

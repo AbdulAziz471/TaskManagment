@@ -1,5 +1,5 @@
 ﻿using FirstApi.Data;
-using FirstApi.Modals; 
+using FirstApi.Models; 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

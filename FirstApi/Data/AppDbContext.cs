@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using FirstApi.Modals;
+using FirstApi.Models;
 
 namespace FirstApi.Data
 {

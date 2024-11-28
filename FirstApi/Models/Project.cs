@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FirstApi.Modals
+namespace FirstApi.Models
 {
     public class Project
     {
