@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using FirstApi.Modals;
 
-namespace FirstApi.Modals
+namespace FirstApi.DTO
 {
-    public class Project
+    public class ProjectDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -14,16 +14,15 @@ namespace FirstApi.Modals
         public DateTime CreatedDate { get; set; }
         public DateTime LastUpdatedDate { get; set; }
         public int OwnerId { get; set; }
-        public List<int> AssignedTo { get; set; } = new List<int>();
+        public List<int> AssignedTo { get; set; }
         public decimal Budget { get; set; }
         public decimal Cost { get; set; }
         public string Category { get; set; }
-        public List<string> Tags { get; set; } = new List<string>();
+        public List<string> Tags { get; set; }
         public int ClientId { get; set; }
         public float ProgressPercentage { get; set; }
         public bool IsArchived { get; set; }
-        public List<string> Documents { get; set; } = new List<string>();
-        public List<Issue> Issues { get; set; } = new List<Issue>();
-        public List<User> Users { get; set; } = new List<User>();
+        public List<string> Documents { get; set; }
     }
+
 }

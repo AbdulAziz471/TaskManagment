@@ -19,7 +19,7 @@ namespace FirstApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetIssues()
         {
-            var issues = await _context.Issues.ToListAsync();
+            var issues = await _context.Issues.Include(i => i.Project).ToListAsync();
             if (issues.Count == 0)
             {
                 return NotFound("No Issue found.");
@@ -31,7 +31,9 @@ namespace FirstApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIssueById(int id)
         {
-            var issue = await _context.Issues.FindAsync(id);
+            var issue = await _context.Issues
+               .Include(i => i.Project)
+               .FirstOrDefaultAsync(i => i.Id == id);
             if (issue == null)
             {
                 return NotFound($"Issue with ID {id} not found.");
@@ -44,21 +46,22 @@ namespace FirstApi.Controllers
         public  async Task<IActionResult> CreateIssue([FromBody] Issue issue)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest("Invalid Issue data.");
-            }
+                return BadRequest("Invalid issue data.");
 
-            await _context.Issues.AddAsync(issue);
+            // Ensure the Project exists
+            var project = await _context.Projects.FindAsync(issue.ProjectId);
+            if (project == null)
+                return BadRequest("Invalid ProjectId. The referenced project does not exist.");
+
+            issue.CreatedDate = DateTime.Now;
+            issue.LastUpdatedDate = DateTime.Now;
+
+            _context.Issues.Add(issue);
             await _context.SaveChangesAsync();
 
-            return Ok(new
-            {
-                Message = "Issue created successfully.",
-                IssueId = issue.Id,
-                IssueName = issue.Title,
-                CreatedAt = issue.CreatedDate
-            });
+            return CreatedAtAction(nameof(GetIssueById), new { id = issue.Id }, issue);
         }
+
 
         // PUT api/<IssueController>/5
         [HttpPut("{id}")]

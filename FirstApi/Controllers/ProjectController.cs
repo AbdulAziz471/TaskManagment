@@ -1,4 +1,5 @@
 ﻿using FirstApi.Data;
+using FirstApi.DTO;
 using FirstApi.Modals; 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,13 +18,19 @@ namespace FirstApi.Controllers
         }
         // GET: api/<ProjectController>
         [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GetProjects()
         {
-            var projects = await _context.Projects.ToListAsync();
-            if (projects.Count == 0)
-            {
-                return NotFound("No projects found.");
-            }
+            // Fetch all projects and include related issues
+            var projects = await _context.Projects
+                .Include(p => p.Issues) // Include the Issues navigation property
+                .ToListAsync();
+
+            // Check if any projects exist
+            if (!projects.Any())
+                return NotFound(new { Message = "No projects found." });
+
+            // Return the list of projects
             return Ok(projects);
         }
 
@@ -31,27 +38,59 @@ namespace FirstApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProjectById(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
+            var project = await _context.Projects
+       .Include(p => p.Issues) // Includes the Issues relationship
+       .FirstOrDefaultAsync(p => p.Id == id);
+
+            // Return 404 if project is not found
             if (project == null)
-            {
-                return NotFound($"Project with ID {id} not found.");
-            }
+                return NotFound(new { Message = $"Project with ID {id} not found." });
+
+            // Return the project directly
             return Ok(project);
         }
 
         // POST api/<ProjectController>
         [HttpPost]
-        public async Task<IActionResult> CreateProject([FromBody] Project project)
+        public async Task<IActionResult> CreateProject([FromBody] ProjectDTO projectDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Invalid project data.");
+                return BadRequest(new
+                {
+                    Message = "Invalid project data.",
+                    Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
+                });
             }
 
+            // Map the DTO to the Project entity
+            var project = new Project
+            {
+                Name = projectDto.Name,
+                Description = projectDto.Description,
+                Status = projectDto.Status,
+                Priority = projectDto.Priority,
+                StartDate = projectDto.StartDate,
+                EndDate = projectDto.EndDate,
+                OwnerId = projectDto.OwnerId,
+                AssignedTo = projectDto.AssignedTo,
+                Budget = projectDto.Budget,
+                Cost = projectDto.Cost,
+                Category = projectDto.Category,
+                Tags = projectDto.Tags,
+                ClientId = projectDto.ClientId,
+                ProgressPercentage = projectDto.ProgressPercentage,
+                IsArchived = projectDto.IsArchived,
+                Documents = projectDto.Documents,
+                CreatedDate = DateTime.Now,
+                LastUpdatedDate = DateTime.Now
+            };
+
+            // Save the project to the database
             await _context.Projects.AddAsync(project);
             await _context.SaveChangesAsync();
 
-            return Ok(new
+            return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, new
             {
                 Message = "Project created successfully.",
                 ProjectId = project.Id,
@@ -59,6 +98,7 @@ namespace FirstApi.Controllers
                 CreatedAt = project.CreatedDate
             });
         }
+
 
         // PUT api/<ProjectController>/5
         [HttpPut("{id}")]

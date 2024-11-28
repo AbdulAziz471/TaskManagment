@@ -8,8 +8,10 @@
         public string PhoneNumber { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
-
-        public string Role { get; set; }
+        public List<Project> Projects { get; set; } = new List<Project>();
+        public ICollection<Role> Roles { get; set; } = new List<Role>();
+        public int? TeamId { get; set; }
+        public Team Team { get; set; }
     }
 
 }

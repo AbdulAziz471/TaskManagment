@@ -61,9 +61,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false
         };
     });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200") // Allow your frontend origin
+               .AllowAnyHeader() // Allow any headers
+               .AllowAnyMethod() // Allow any HTTP methods
+               .AllowCredentials(); // Allow cookies or credentials if needed
+    });
+});
 builder.Services.AddAuthorization();
-
+    
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -72,7 +81,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 app.UseAuthentication(); // This must come before UseAuthorization
 app.UseAuthorization();

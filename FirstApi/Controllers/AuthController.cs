@@ -20,6 +20,9 @@ public class AuthController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// Registers a new user with the specified Role.
+    /// </summary>
     // Register endpoint
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterDto registerDto)
@@ -28,6 +31,16 @@ public class AuthController : ControllerBase
         if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
         {
             return BadRequest("Email is already registered.");
+        }
+
+        // Fetch roles based on provided RoleIds
+        var roles = await _context.Roles
+            .Where(r => registerDto.RoleIds.Contains(r.Id))
+            .ToListAsync();
+
+        if (!roles.Any())
+        {
+            return BadRequest("Invalid roles provided.");
         }
 
         // Generate password hash and salt
@@ -39,7 +52,7 @@ public class AuthController : ControllerBase
             PhoneNumber = registerDto.PhoneNumber,
             PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
             PasswordSalt = hmac.Key,
-             Role = registerDto.Role
+            Roles = roles // Associate roles with the user
         };
 
         _context.Users.Add(user);
@@ -47,12 +60,17 @@ public class AuthController : ControllerBase
 
         return Ok("User registered successfully.");
     }
-
+    /// <summary>
+    /// Login A User
+    /// </summary>
     // Login endpoint
     [HttpPost("login")]
     public async Task<ActionResult<string>> Login(LoginDto loginDto)
     {
-        var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == loginDto.Email);
+        var user = await _context.Users
+            .Include(u => u.Roles) // Include roles during login
+            .SingleOrDefaultAsync(u => u.Email == loginDto.Email);
+
         if (user == null)
         {
             return Unauthorized("Invalid email.");
@@ -71,20 +89,23 @@ public class AuthController : ControllerBase
         return Ok(token);
     }
 
-    // Helper method to generate a JWT token (if needed)
     private string GenerateJwtToken(User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes("a_very_long_secure_secret_key_that_is_at_least_64_characters_long"); // Replace "your_secret_key" with a strong secret key
 
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Email)
+        };
+
+        // Add roles to claims
+        claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role.Title)));
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[]
-            {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Email),
-            new Claim(ClaimTypes.Role, user.Role)
-            }),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddDays(1), // Set token expiration to 1 day
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
         };
