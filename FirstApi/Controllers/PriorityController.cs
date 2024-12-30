@@ -1,5 +1,6 @@
 ﻿using FirstApi.Data;
 using FirstApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FirstApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class PriorityController : ControllerBase
     {
@@ -35,6 +37,9 @@ namespace FirstApi.Controllers
             return Ok(prioroty);
         }
 
+        /// <summary>
+        /// Retrieves A priority By Its ID.
+        /// </summary>
         // GET api/<PriorityController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPriorityById(int id)
@@ -47,6 +52,9 @@ namespace FirstApi.Controllers
             return Ok(priority);
         }
 
+        /// <summary>
+        /// Create A Priority.
+        /// </summary>
         // POST api/<PriorityController>
         [HttpPost]
         public async Task<IActionResult> CreatePriority([FromBody] Priority priority)
@@ -67,6 +75,11 @@ namespace FirstApi.Controllers
             });
         }
 
+
+
+        /// <summary>
+        /// Udpate  A Priority By Its ID.
+        /// </summary>
         // PUT api/<PriorityController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePriority(int id, [FromBody] Priority priority)
@@ -100,6 +113,12 @@ namespace FirstApi.Controllers
 
         // DELETE api/<PriorityController>/5
         [HttpDelete("{id}")]
+
+
+
+        /// <summary>
+        /// Delete  A Priority By Its ID.
+        /// </summary>
         public async Task<IActionResult> DeletePriority(int id)
         {
             var priority = await _context.Priorities.FindAsync(id);

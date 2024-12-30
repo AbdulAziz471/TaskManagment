@@ -1,11 +1,13 @@
 ﻿using FirstApi.Data;
 using FirstApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FirstApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class StatusController : ControllerBase
     {
@@ -15,6 +17,11 @@ namespace FirstApi.Controllers
         {
             _context = context;
         }
+
+
+        /// <summary>
+        /// Retrieves all Statuses.
+        /// </summary>
         // GET: api/<StatusController>
         [HttpGet]
         public async Task<IActionResult> GetStatus()
@@ -27,6 +34,10 @@ namespace FirstApi.Controllers
             return Ok(status);
         }
 
+
+        /// <summary>
+        /// Retrieve A Status By Its ID.
+        /// </summary>
         // GET api/<StatusController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStatusById(int id)
@@ -39,6 +50,10 @@ namespace FirstApi.Controllers
             return Ok(status);
         }
 
+
+        /// <summary>
+        /// Create A Status
+        /// </summary>
         // POST api/<StatusController>
         [HttpPost]
         public async Task<IActionResult> CreateStatus([FromBody] Status status)
@@ -59,6 +74,11 @@ namespace FirstApi.Controllers
             });
         }
 
+
+
+        /// <summary>
+        /// Update  A Status
+        /// </summary>
         // PUT api/<StatusController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] Status status)
@@ -90,7 +110,11 @@ namespace FirstApi.Controllers
             return Ok($"Status with ID {id} updated successfully.");
         }
 
+        /// <summary>
+        /// Delete A Status By Its ID
+        /// </summary>
         // DELETE api/<StatusController>/5
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStatus(int id)
         {

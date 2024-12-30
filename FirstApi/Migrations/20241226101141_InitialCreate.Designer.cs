@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FirstApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241121053238_AddTeamTableAndRelation")]
-    partial class AddTeamTableAndRelation
+    [Migration("20241226101141_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace FirstApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("FirstApi.Modals.Issue", b =>
+            modelBuilder.Entity("FirstApi.Models.Issue", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,7 +88,7 @@ namespace FirstApi.Migrations
                     b.ToTable("Issues");
                 });
 
-            modelBuilder.Entity("FirstApi.Modals.Priority", b =>
+            modelBuilder.Entity("FirstApi.Models.Priority", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,7 +105,7 @@ namespace FirstApi.Migrations
                     b.ToTable("Priorities");
                 });
 
-            modelBuilder.Entity("FirstApi.Modals.Project", b =>
+            modelBuilder.Entity("FirstApi.Models.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -180,7 +180,24 @@ namespace FirstApi.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("FirstApi.Modals.Status", b =>
+            modelBuilder.Entity("FirstApi.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("FirstApi.Models.Status", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -197,7 +214,7 @@ namespace FirstApi.Migrations
                     b.ToTable("Statuses");
                 });
 
-            modelBuilder.Entity("FirstApi.Modals.Team", b =>
+            modelBuilder.Entity("FirstApi.Models.Team", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -215,10 +232,10 @@ namespace FirstApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Team");
+                    b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("FirstApi.Modals.User", b =>
+            modelBuilder.Entity("FirstApi.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -246,10 +263,6 @@ namespace FirstApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("TeamId")
                         .HasColumnType("int");
 
@@ -260,9 +273,39 @@ namespace FirstApi.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("FirstApi.Modals.Issue", b =>
+            modelBuilder.Entity("UserProject", b =>
                 {
-                    b.HasOne("FirstApi.Modals.Project", "Project")
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProjectId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserProject", (string)null);
+                });
+
+            modelBuilder.Entity("UserRole", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RoleId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRole", (string)null);
+                });
+
+            modelBuilder.Entity("FirstApi.Models.Issue", b =>
+                {
+                    b.HasOne("FirstApi.Models.Project", "Project")
                         .WithMany("Issues")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -271,9 +314,9 @@ namespace FirstApi.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("FirstApi.Modals.User", b =>
+            modelBuilder.Entity("FirstApi.Models.User", b =>
                 {
-                    b.HasOne("FirstApi.Modals.Team", "Team")
+                    b.HasOne("FirstApi.Models.Team", "Team")
                         .WithMany("Members")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -281,12 +324,42 @@ namespace FirstApi.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("FirstApi.Modals.Project", b =>
+            modelBuilder.Entity("UserProject", b =>
+                {
+                    b.HasOne("FirstApi.Models.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FirstApi.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UserRole", b =>
+                {
+                    b.HasOne("FirstApi.Models.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FirstApi.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FirstApi.Models.Project", b =>
                 {
                     b.Navigation("Issues");
                 });
 
-            modelBuilder.Entity("FirstApi.Modals.Team", b =>
+            modelBuilder.Entity("FirstApi.Models.Team", b =>
                 {
                     b.Navigation("Members");
                 });

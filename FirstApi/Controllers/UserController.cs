@@ -1,6 +1,7 @@
 ﻿using FirstApi.Data;
 using FirstApi.DTO;
 using FirstApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace FirstApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class UserController : ControllerBase
     {

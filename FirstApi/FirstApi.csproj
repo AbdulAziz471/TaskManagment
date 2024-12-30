@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DTO\ProjectDto\**" />
+    <Content Remove="DTO\ProjectDto\**" />
+    <EmbeddedResource Remove="DTO\ProjectDto\**" />
+    <None Remove="DTO\ProjectDto\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
@@ -20,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTO\ProjectDto\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

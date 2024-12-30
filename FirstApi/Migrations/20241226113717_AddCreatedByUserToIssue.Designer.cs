@@ -4,6 +4,7 @@ using FirstApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FirstApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241226113717_AddCreatedByUserToIssue")]
+    partial class AddCreatedByUserToIssue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,67 @@ namespace FirstApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("FirstApi.Models.Issue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("EstimatedHours")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("LastUpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.PrimitiveCollection<string>("Tags")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Issues");
+                });
 
             modelBuilder.Entity("FirstApi.Models.Priority", b =>
                 {
@@ -129,69 +193,6 @@ namespace FirstApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Projects");
-                });
-
-            modelBuilder.Entity("FirstApi.Models.Query", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AssignedUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PriorityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("StatusId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignedUserId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("PriorityId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("StatusId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Queries");
                 });
 
             modelBuilder.Entity("FirstApi.Models.Role", b =>
@@ -326,6 +327,21 @@ namespace FirstApi.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("IssueUser", b =>
+                {
+                    b.Property<int>("AssignedIssuesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AssignedUsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AssignedIssuesId", "AssignedUsersId");
+
+                    b.HasIndex("AssignedUsersId");
+
+                    b.ToTable("IssueUser");
+                });
+
             modelBuilder.Entity("UserProject", b =>
                 {
                     b.Property<int>("ProjectId")
@@ -356,50 +372,23 @@ namespace FirstApi.Migrations
                     b.ToTable("UserRole", (string)null);
                 });
 
-            modelBuilder.Entity("FirstApi.Models.Query", b =>
+            modelBuilder.Entity("FirstApi.Models.Issue", b =>
                 {
-                    b.HasOne("FirstApi.Models.User", "AssignedUser")
-                        .WithMany("AssignedQueries")
-                        .HasForeignKey("AssignedUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("FirstApi.Models.User", "CreatedBy")
-                        .WithMany("Queries")
-                        .HasForeignKey("CreatedById")
+                    b.HasOne("FirstApi.Models.User", "CreatedByUser")
+                        .WithMany("CreatedIssues")
+                        .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("FirstApi.Models.Priority", "Priority")
-                        .WithMany()
-                        .HasForeignKey("PriorityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("FirstApi.Models.Project", "Project")
-                        .WithMany("Queries")
+                        .WithMany("Issues")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FirstApi.Models.Status", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FirstApi.Models.User", null)
-                        .WithMany("CreatedQueries")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("AssignedUser");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Priority");
+                    b.Navigation("CreatedByUser");
 
                     b.Navigation("Project");
-
-                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("FirstApi.Models.User", b =>
@@ -410,6 +399,21 @@ namespace FirstApi.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("IssueUser", b =>
+                {
+                    b.HasOne("FirstApi.Models.Issue", null)
+                        .WithMany()
+                        .HasForeignKey("AssignedIssuesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FirstApi.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("AssignedUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("UserProject", b =>
@@ -444,7 +448,7 @@ namespace FirstApi.Migrations
 
             modelBuilder.Entity("FirstApi.Models.Project", b =>
                 {
-                    b.Navigation("Queries");
+                    b.Navigation("Issues");
                 });
 
             modelBuilder.Entity("FirstApi.Models.Team", b =>
@@ -454,11 +458,7 @@ namespace FirstApi.Migrations
 
             modelBuilder.Entity("FirstApi.Models.User", b =>
                 {
-                    b.Navigation("AssignedQueries");
-
-                    b.Navigation("CreatedQueries");
-
-                    b.Navigation("Queries");
+                    b.Navigation("CreatedIssues");
                 });
 #pragma warning restore 612, 618
         }

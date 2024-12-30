@@ -1,12 +1,14 @@
 ﻿using FirstApi.Data;
 using FirstApi.DTO;
-using FirstApi.Models; 
+using FirstApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FirstApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ProjectController : ControllerBase
     {
@@ -18,12 +20,11 @@ namespace FirstApi.Controllers
         }
         // GET: api/<ProjectController>
         [HttpGet]
-        [HttpGet]
         public async Task<IActionResult> GetProjects()
         {
             // Fetch all projects and include related issues
             var projects = await _context.Projects
-                .Include(p => p.Issues) // Include the Issues navigation property
+                //.Include(p => p.Issues) // Include the Issues navigation property
                 .ToListAsync();
 
             // Check if any projects exist
@@ -39,7 +40,7 @@ namespace FirstApi.Controllers
         public async Task<IActionResult> GetProjectById(int id)
         {
             var project = await _context.Projects
-       .Include(p => p.Issues) // Includes the Issues relationship
+       //.Include(p => p.Issues) 
        .FirstOrDefaultAsync(p => p.Id == id);
 
             // Return 404 if project is not found

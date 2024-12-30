@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using FirstApi.Data; // Ensure this matches your namespace for AppDbContext
+using FirstApi.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -10,7 +10,6 @@ var key = Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]);
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
-// Register AppDbContext with SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -62,10 +61,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddCors(options =>
-{
+{   
     options.AddPolicy("AllowFrontend", builder =>
     {
-        builder.WithOrigins("http://localhost:4200") // Allow your frontend origin
+        builder.WithOrigins("http://localhost:5173") 
                .AllowAnyHeader() // Allow any headers
                .AllowAnyMethod() // Allow any HTTP methods
                .AllowCredentials(); // Allow cookies or credentials if needed

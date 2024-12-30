@@ -23,7 +23,8 @@ namespace FirstApi.Models
         public float ProgressPercentage { get; set; }
         public bool IsArchived { get; set; }
         public List<string> Documents { get; set; } = new List<string>();
-        public List<Issue> Issues { get; set; } = new List<Issue>();
         public List<User> Users { get; set; } = new List<User>();
+
+        public virtual ICollection<Query> Queries { get; set; } = new List<Query>();
     }
 }

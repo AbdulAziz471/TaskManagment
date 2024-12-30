@@ -1,6 +1,7 @@
 ﻿using FirstApi.Data;
 using FirstApi.DTO;
 using FirstApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FirstApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class RoleController : Controller
     {
@@ -18,6 +20,10 @@ namespace FirstApi.Controllers
             _context = context;
         }
 
+
+        /// <summary>
+        /// Get All Roles
+        /// </summary>
         // GET: api/<RoleController>
         [HttpGet]
         public async Task<IActionResult> GetRoles()
@@ -30,6 +36,10 @@ namespace FirstApi.Controllers
             return Ok(roles);
         }
 
+
+        /// <summary>
+        /// Get A Role By Its ID 
+        /// </summary>
         // GET api/<RoleController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRoleById(int id)
@@ -41,6 +51,12 @@ namespace FirstApi.Controllers
             }
             return Ok(role);
         }
+
+
+
+        /// <summary>
+        /// Create A Role 
+        /// </summary>
 
         // POST api/<RoleController>
         [HttpPost]
@@ -65,6 +81,10 @@ namespace FirstApi.Controllers
             });
         }
 
+
+        /// <summary>
+        /// Udpate  A Role By Its ID.
+        /// </summary>
         // PUT api/<RoleController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRole(int id, [FromBody] Role role)
@@ -97,6 +117,10 @@ namespace FirstApi.Controllers
         }
 
 
+
+        /// <summary>
+        /// Delete  A Role By Its ID.
+        /// </summary>
         // DELETE api/<RoleController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRole(int id)

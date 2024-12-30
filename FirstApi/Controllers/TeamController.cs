@@ -1,6 +1,7 @@
 ﻿using FirstApi.Data;
 using FirstApi.DTO.Team;
 using FirstApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FirstApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class TeamController : ControllerBase
     {
@@ -160,7 +162,7 @@ namespace FirstApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTeam(int id)
         {
-            var team = await _context.Teams.Include(t => t.Members) // Eagerly load the Members navigation property
+            var team = await _context.Teams.Include(t => t.Members)
         .FirstOrDefaultAsync(t => t.Id == id); ;
             if (team == null)
             {
